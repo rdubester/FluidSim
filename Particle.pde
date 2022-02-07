@@ -21,9 +21,10 @@ class Particle {
   int[] colors = {c0, c1, c2}; 
   
   int currentColor = 0;
-  float baseOpacity = 16;
+  //float baseOpacity = 16;
+  float baseOpacity = 250;
   float opacity = 1;  
-  float size = 1;
+  float size = 2;
   
   Particle(PVector pos, PVector vel, PVector acc, float offset) {
     this.pos = pos;

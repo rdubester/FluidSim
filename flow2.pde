@@ -76,8 +76,8 @@ Mode mode = Mode.RECORD;
 
 float timeScale = 2;
 int seed;
-int num_particles = 100000;
-//int num_particles = 80000;
+//int num_particles = 100000;
+int num_particles = 8000;
 //int num_particles = 10;
 
 int res = 5;
@@ -85,8 +85,8 @@ float step = 0.1;
 float fmag = 2.5;
 float turbulence = 8;
 
-float diffuseSpeed = 500;
-float fadeSpeed = 1.2;
+float diffuseSpeed = 600;
+float fadeSpeed = 0.2;
 float prevT;
 
 //OpenSimplexNoise noise;
@@ -95,10 +95,11 @@ PVector[][] fieldSamples;
 Particle[] particles;
 
 void setup() {
-  background(255);
+  background(0);
   size(500, 500);
   smooth(8);
-  blendMode(DARKEST);
+  //blendMode(DARKEST);
+  blendMode(LIGHTEST);
   strokeCap(SQUARE);
 
   result = new int[width*height][3];
@@ -134,7 +135,7 @@ void draw_(float t) {
     yoff += step;
   }
 
-  translate(0, -height/2);
+  translate(0, -height/3);
   scale(1.5);
   translate(-20, 0);
 
@@ -195,11 +196,12 @@ void fadeAndDiffuse(float dt) {
         sqrt(bsum/samples));
       int diffused = lerpColor(original_val, blurred_val, diffuseSpeed * dt);
       
-      int fadeAmount = int(255 * fadeSpeed * dt);
-      int faded = color(
-        red(diffused) + fadeAmount,
-        green(diffused) + fadeAmount,
-        blue(diffused) + fadeAmount);
+      color faded = lerpColor(diffused, color(0), sqrt(fadeSpeed * dt));
+      //int fadeAmount = int(255 * fadeSpeed * dt);
+      //int faded = color(
+      //  red(diffused) + fadeAmount,
+      //  green(diffused) + fadeAmount,
+      //  blue(diffused) + fadeAmount);
       processed[y * rows + x] = faded;
     }
   }
