@@ -68,25 +68,27 @@ int numFrames = 100;
 int windup = 2;
 float shutterAngle = 1;
 
-//Mode mode = Mode.PLAY;
+Mode mode = Mode.PLAY;
 //Mode mode = Mode.INSPECT;
-Mode mode = Mode.RECORD;
+//Mode mode = Mode.RECORD;
 //////////////////////////////////////////////////////////////////////
 
 
 float timeScale = 2;
+float border = 50;
 int seed;
+
 //int num_particles = 100000;
-int num_particles = 8000;
+int num_particles = 12000;
 //int num_particles = 10;
 
 int res = 5;
-float step = 0.1;
+float step = 0.01;
 float fmag = 2.5;
-float turbulence = 8;
+float turbulence = 0.1;
 
 float diffuseSpeed = 600;
-float fadeSpeed = 0.2;
+float fadeSpeed = 0.5;
 float prevT;
 
 //OpenSimplexNoise noise;
@@ -96,7 +98,7 @@ Particle[] particles;
 
 void setup() {
   background(0);
-  size(500, 500);
+  size(500, 500, P3D);
   smooth(8);
   //blendMode(DARKEST);
   blendMode(LIGHTEST);
@@ -108,7 +110,7 @@ void setup() {
   particles = new Particle[num_particles];
   for (int i = 0; i < particles.length; i++) {
     //float offset = 0.5 * (i % 4);
-    float offset = random(2);
+    float offset = 0.01 * int(random(200));
     particles[i] = randomParticle(width, height, offset);
   }
 }
@@ -134,10 +136,26 @@ void draw_(float t) {
     }
     yoff += step;
   }
-
-  translate(0, -height/3);
-  scale(1.5);
-  translate(-20, 0);
+  
+  // rotate particles come from the top
+  translate(width, 0);
+  rotateZ(HALF_PI);
+  
+  // zoom in towards center of image
+  scale(1 + border / float(width));
+  translate(-border/2, -border / 2);
+  
+  // rotate slightly
+  rotateY(-1.5 * PI/6);
+  translate(100, 0);
+  
+  
+  push();
+  stroke(255);
+  noFill();
+  //rect(200, 200, width - 400, height - 400);
+  //point(width/2, height/2);
+  pop();
 
   // update each particle and display
   for (int a = 0; a < particles.length; a++) {
