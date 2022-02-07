@@ -15,15 +15,15 @@ class Particle {
   float prevTime = 0;
   float lifespan = 2;
   
-  int c0 = color(255, 27, 80);
-  int c1 = color(232, 9, 255);
+  int c0 = color(205, 7, 40);
+  int c1 = color(202, 9, 235);
   int c2 = color(3, 150, 230);
   int[] colors = {c0, c1, c2}; 
   
   int currentColor = 0;
-  float baseOpacity = 256;
+  float baseOpacity = 16;
   float opacity = 1;  
-  float size = 4;
+  float size = 1;
   
   Particle(PVector pos, PVector vel, PVector acc, float offset) {
     this.pos = pos;

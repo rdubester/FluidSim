@@ -20,15 +20,19 @@ float ease(float p, float g) {
     return 1 - 0.5 * pow(2*(1 - p), g);
 }
 
+color lerpColors(color[] colors, float q) {
+ return lerpColors(colors, q, false); 
+}
 // smoothly interpolate between colors in an array
 // q should be a float between 0 and 1
-color lerpColors(color[] colors, float q) {
+color lerpColors(color[] colors, float q, boolean wrap) {
   // ensure q is in [0, 1]
   q = q % 1;
+  int slots = wrap ? colors.length : colors.length - 1;
   // determine which color band we're in
-  int idx = (int) (q * colors.length);
+  int idx = (int) (q * slots);
   // interpolate
-  float interval = 1 / (float) colors.length;
+  float interval = 1 / (float) slots;
   float lbound = interval * idx;
   float rbound = interval * (idx + 1);
   return lerpColor(

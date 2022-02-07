@@ -68,15 +68,15 @@ int numFrames = 100;
 int windup = 2;
 float shutterAngle = 1;
 
-Mode mode = Mode.PLAY;
+//Mode mode = Mode.PLAY;
 //Mode mode = Mode.INSPECT;
-//Mode mode = Mode.RECORD;
+Mode mode = Mode.RECORD;
 //////////////////////////////////////////////////////////////////////
 
 
 float timeScale = 2;
 int seed;
-int num_particles = 5000;
+int num_particles = 100000;
 //int num_particles = 80000;
 //int num_particles = 10;
 
@@ -86,7 +86,7 @@ float fmag = 2.5;
 float turbulence = 8;
 
 float diffuseSpeed = 500;
-float fadeSpeed = 1.6;
+float fadeSpeed = 1.2;
 float prevT;
 
 //OpenSimplexNoise noise;
@@ -134,9 +134,9 @@ void draw_(float t) {
     yoff += step;
   }
 
-  //translate(0, -height/2);
-  //scale(2);
-  //translate(-20, 0);
+  translate(0, -height/2);
+  scale(1.5);
+  translate(-20, 0);
 
   // update each particle and display
   for (int a = 0; a < particles.length; a++) {
