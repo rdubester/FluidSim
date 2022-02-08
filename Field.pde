@@ -17,7 +17,7 @@ class Field {
     this(magnitude, turbulence, 1000, 1000);
   }
   
-  PVector sample(float x, float y, float t){
+  PVector sampleAt(float x, float y, float t){
     float current = (float) this.generator.eval(
       x + xoffset,
       y + yoffset,
