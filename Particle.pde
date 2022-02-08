@@ -13,18 +13,22 @@ class Particle {
   
   float offset;
   float prevTime = 0;
-  float lifespan = 2;
+  float lifespan = 1;
   
   int c0 = color(205, 7, 40);
   int c1 = color(202, 9, 235);
   int c2 = color(3, 150, 230);
-  int[] colors = {c0, c1, c2}; 
+  
+  //int[] baseColors = {c0, c0, c1, c2, c2, 255}; 
+  //int[] baseColors = {c0, c1, c2, c1};
+  int[] baseColors = {c2, c1};
+  //int[] baseColors = {#ffffff};
+  float baseOpacity = 48;
+  float baseSize = 1;
   
   int currentColor = 0;
-  //float baseOpacity = 16;
-  float baseOpacity = 250;
-  float opacity = 1;  
-  float size = 2;
+  float currentOpacity = 1;  
+  float currentSize = 1;
   
   Particle(PVector pos, PVector vel, PVector acc, float offset) {
     this.pos = pos;
@@ -74,37 +78,28 @@ class Particle {
   }
 
   void updatePhysics() {
-    // record current position
     this.prevPos.set(this.pos);
-    // update and constrain velocity
     this.vel.add(this.acc);
     this.vel.limit(maxSpeed);
-    // update and constrain position
     this.pos.add(this.vel);
-   // this.constrainPos(width,height);
-    //reset acceleration to 0
+    //this.constrainPos(width,height);
     this.acc.mult(0);
   }
   
   void updateStyle() {    
     float age = this.prevTime / this.lifespan;
-    float d = (1 - sqrt(age));
-    // adjust opacity
-    if (age == 0) {
-     this.opacity = this.baseOpacity; 
-    } else {
-      this.opacity = this.baseOpacity * d;
-    }
-    //adjust color
-    this.currentColor = lerpColors(colors, 1-d);
-    //adjust size?
-    
+    float d = sqrt(age);
+    this.currentOpacity = this.baseOpacity * (1-d);
+    //this.currentColor = lerpColors(baseColors, d);
+    this.currentColor = lerpColors(baseColors, this.offset, true);
+    this.currentSize = lerp(this.baseSize, 0, d);
+    //this.currentSize = this.baseSize;
   }
   
   void show() {
     push();
-    strokeWeight(3);
-    stroke(this.currentColor, this.opacity);
+    strokeWeight(this.currentSize);
+    stroke(this.currentColor, this.currentOpacity);
     float dist = PVector.sub(this.pos, this.prevPos).mag();
     if (dist < 20) {
       line(this.prevPos.x, this.prevPos.y, this.pos.x, this.pos.y);
@@ -127,11 +122,13 @@ class Particle {
 }
 
 // generate a new particle with random position and velocity
-Particle randomParticle(int w, int h, float offset) {
-    float start_y = (randomGaussian() * h / 6) + h/2;
-    PVector start_pos = new PVector(0, start_y);
-    float theta = map(random(1), 0, 1, -PI, PI);
-    PVector start_vel = PVector.fromAngle(theta).mult(maxSpeed);
-    PVector start_acc = new PVector();
-    return new Particle(start_pos, start_vel, start_acc, offset);
-  }
+Particle randomParticle(int w, int h, float offset, boolean useGaussian) {
+  float start_y = useGaussian ? randomGaussian()*h/6 + h/2 : random(h);
+  
+  
+  PVector start_pos = new PVector(0, start_y);
+  float theta = map(random(1), 0, 1, -PI, PI);
+  PVector start_vel = PVector.fromAngle(theta).mult(maxSpeed);
+  PVector start_acc = new PVector();
+  return new Particle(start_pos, start_vel, start_acc, offset);
+}
