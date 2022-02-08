@@ -23,10 +23,10 @@ class Field {
       y + yoffset,
       sin(TAU * t) * this.turbulence, cos(TAU * t) * this.turbulence);
     float foam = (float) this.generator.eval(
-      5 * x + xoffset,
-      5 * y + yoffset,
-      sin(TAU * t) * 0.1 * this.turbulence, cos(TAU * t) * 0.1 * this.turbulence);
-    float combined = lerp(current, foam, 0.2);
+      10 * x + xoffset,
+      10 * y + yoffset,
+      sin(TAU * t) * 1.2 * this.turbulence, cos(TAU * t) * 1.2 * this.turbulence);
+    float combined = lerp(current, foam, 0.4);
     float range = 1.33;
     float theta = map(combined, -1, 1, -range * PI, range* PI);
     return PVector.fromAngle(theta).mult(this.magnitude);

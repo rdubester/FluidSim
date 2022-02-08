@@ -66,35 +66,38 @@ void draw() {
 int samplesPerFrame = 1;
 int numFrames = 100;
 int windup = 2;
-float shutterAngle = 1;
+float shutterAngle = 1.0001;
 
 //Mode mode = Mode.PLAY;
-//Mode mode = Mode.INSPECT;
+//Mode mode = Msode.INSPECT;
 Mode mode = Mode.RECORD;
 
 //////////////////////////////////////////////////////////////////////
 
 
-float border = 100;
+float border = 20;
 int seed;
 
-//int num_particles = 100000;
-int num_particles = 120000;
-//int num_particles = 10;
+int num_particles = 100000;
+//int num_particles = 60000;
 
 int res = 5;
-float step = 0.1;
-float fmag = 0.75;
+float step = 0.11;
+float fmag = 0.9;
 float turbulence = 0.15;
 
+float xoffset = 121.5;
+float yoffset = 458;
+
 float diffuseSpeed = 600;
-float fadeSpeed = 10;
+float fadeSpeed = 5;
 float prevT;
 
 //OpenSimplexNoise noise;
 Field field;
 PVector[][] fieldSamples;
 Particle[] particles;
+int[] processed;
 
 void setup() {
   background(0);
@@ -104,7 +107,7 @@ void setup() {
   strokeCap(SQUARE);
 
   result = new int[width*height][3];
-  field = new Field(fmag, turbulence, 951, 110);
+  field = new Field(fmag, turbulence, xoffset, yoffset);
   fieldSamples = new PVector[height/res][width/res];
   particles = new Particle[num_particles];
   for (int i = 0; i < particles.length; i++) {
@@ -124,7 +127,9 @@ void draw_(float t) {
   prevT = t;
   
   loadPixels();
-  fadeAndDiffuse(dt);
+  processed = fadeAndDiffuse(pixels, width, height, dt);
+  for (int i = 0; i < pixels.length; i++)
+    pixels[i] = processed[i];
   updatePixels();
 
   // sample the field
@@ -139,14 +144,16 @@ void draw_(float t) {
   }
   
   // rotate particles come from the top
-  translate(width, 0);
-  rotateZ(HALF_PI);
+  //translate(width, 0);
+  //rotateZ(HALF_PI);
   // zoom in towards center of image
   scale(1 + border / float(width));
   translate(-border/2, -border / 2);
   // rotate slightly
   rotateY(-1.5 * PI/6);
-  translate(100, 0);
+  translate(120, 0);
+  rotateY(-0.1);
+  translate(0,0,20);
   
   //push();
   //stroke(255);
@@ -156,59 +163,39 @@ void draw_(float t) {
   //pop();
 
   // update each particle and display
-  for (int a = 0; a < particles.length; a++) {
-    Particle p = particles[a];
-    // set the particle's state given time
-    p.state(t);
-    // apply field and update physcs
+  for (Particle p : particles) {
+    p.updateTime(t);
     p.apply(fieldSamples, res);
     p.updatePhysics();
-    // display the particle
     p.updateStyle();
     p.show(); 
   }
-  
   pop();
 }
 
-// based on sebastian league slime mold simulation code
-//https://github.com/SebLague/Slime-Simulation/blob/6794cfdf584f71c657bd16366e31bf422be99ee6/Assets/Scripts/Slime/SlimeSim.compute
-void fadeAndDiffuse(float dt) {
-  int rows = height;
-  int cols = width;
-  int[] processed = new int[rows * cols];
-  
-  // process each pixel
-  for (int y = 0; y < rows; y++){
-    for (int x = 0; x < cols; x++){
-      int original_val = pixels[y * cols + x];
-      // apply a 3x3 blur
-      int samples = 0;
-      int rsum = 0;
-      int gsum = 0;
-      int bsum = 0;
-      for (int offsetY = -1; offsetY <= 1; offsetY++){
-        for (int offsetX = -1; offsetX <= 1; offsetX++){
-          int sampleY = y + offsetY;
-          int sampleX = x + offsetX;
-          if (sampleY < 0 || sampleY >= rows || sampleX < 0 || sampleX >= cols)
-            continue;
-          samples++;
-          int c = pixels[sampleY * cols + sampleX];
-          rsum += red(c) * red(c);
-          gsum += green(c) * green(c);
-          bsum += blue(c) * blue(c);
-        }
-      }
-      int blurred_val = color(
-        sqrt(rsum/samples),
-        sqrt(gsum/samples),
-        sqrt(bsum/samples));
-      int diffused = lerpColor(original_val, blurred_val, diffuseSpeed * dt);
-      color faded = lerpColor(diffused, color(0), sqrt(fadeSpeed * dt));
-      processed[y * rows + x] = faded;
-    }
-  }
-  for (int i = 0; i < pixels.length; i++)
-    pixels[i] = processed[i];
-}
+//void keyPressed(){
+//  float speed = 1;
+//  if (key == CODED){
+//    if (keyCode == UP){
+//      println("up");
+//      yoffset += speed;
+//    }
+//    if (keyCode == DOWN){
+//      println("down");
+//      yoffset -= speed;
+//    }
+//    if (keyCode == LEFT){
+//      println("left");
+//      xoffset -= speed;
+//    }
+//    if (keyCode == RIGHT){
+//      println("right");
+//      xoffset += speed;
+//    }
+//    if (keyCode == ESC) {
+//      println("esc");
+//      println(xoffset, yoffset);
+//    }
+//    field = new Field(fmag, turbulence, xoffset, yoffset);
+//  }
+//}

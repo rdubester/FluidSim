@@ -40,3 +40,7 @@ color lerpColors(color[] colors, float q, boolean wrap) {
             colors[(idx+1) % colors.length],
             map(q, lbound, rbound, 0, 1));
 }
+
+float circle_project(float x, float r) {
+  return r - sqrt(r * r - x * x);
+}
