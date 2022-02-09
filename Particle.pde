@@ -107,13 +107,24 @@ abstract class Particle {
       mod(this.pos.y, h));
   }
   
-  void circleMap(float yRad, float xRad){
+  void circleMap(float yRad, float xRad, float [][] dispMap, int res){
     float ySign = abs(yRad) / yRad;
     float xSign = abs(xRad) / xRad;
+    
     float ydisp = this.pos.y - width / 2;
     float xdisp = this.pos.x - height / 2;
+    
     float z = ySign * circle_project(ydisp, abs(yRad));
     z += xSign * circle_project(xdisp, abs(xRad));
+    
+    int xCoord = int(this.pos.x / res);
+    int yCoord = int(this.pos.y / res);
+    if (yCoord >= 0 && yCoord < dispMap.length &&
+        xCoord >= 0 && xCoord < dispMap[0].length) {
+          //println(dispMap[xCoord][yCoord]);
+          z += dispMap[xCoord][yCoord];
+      }
+    
     this.pos.set(this.pos.x, this.pos.y, z);
     int shaded = lerpColor(this.currentColor,0, abs(ydisp) * 5 / width);
     this.currentColor = shaded; 

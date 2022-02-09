@@ -1,7 +1,13 @@
 class Matter extends Particle {
  
-  color pink = #D1767F;
-  color blue = #36A3AD;
+  color red = #b53b03;
+  color cobalt = #0385b5;
+  
+  color orange = #e6572c;
+  color teal = #2ce6d7;
+
+  color yellow = #fdbf01;
+  color purple = #7f01fd; 
   
   boolean special;
 
@@ -23,8 +29,16 @@ class Matter extends Particle {
     super(pos, vel, acc, offset);
     this.special = special;
     this.maxVel = 6;
-    this.baseColors = new int[] {pink, blue};
-    this.baseOpacity = 0.75;
+    float r = random(1);
+    if (r > 0.3) {
+      this.baseColors = new int[] {red, cobalt};
+    } else if (r > 0.6){
+       this.baseColors = new int[] {orange, teal};
+    } else {
+      this.baseColors = new int[] {yellow, purple};
+    }
+    
+    this.baseOpacity = 0.3;
   }
 }
 

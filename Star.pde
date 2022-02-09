@@ -19,9 +19,10 @@ class Star extends Particle {
 Particle randomStar(int w, int h, float speed){
   float start_y = random(w);
   float vdisp = abs(start_y - w / 2.0) / (w / 2.0);
-  float start_x = 40 + pow(10 * vdisp, 3) - 100 * random(1);  
+  float start_x = 50 + pow(10 * vdisp, 3) - 100 * random(1);  
   PVector start_pos = new PVector(start_x, start_y, -150);
-  PVector start_vel = PVector.fromAngle(0).mult(speed);
+  float theta = map(start_y, 0, w, -1, 1);
+  PVector start_vel = PVector.fromAngle(theta).mult(speed);
   start_vel.set(start_vel.x, start_vel.y, random(18,20));
   PVector start_acc = new PVector();
   float offset = random(1);

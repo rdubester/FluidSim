@@ -64,8 +64,8 @@ void draw() {
 //////////////////////////////////////////////////////////////////////
 
 int samplesPerFrame = 1;
-int numFrames = 100;
-int windup = 2;
+int numFrames = 200;
+int windup = 1;
 float shutterAngle = 1.0001;
 
 //Mode mode = Mode.PLAY;
@@ -80,14 +80,15 @@ float dt;
 float border = 50;
 int seed;
 
-int num_particles = 100000;
+int num_particles = 200000;
+//int num_particles = 100000;
 //int num_particles = 50000;
-int num_stars = 5000;
+int num_stars = 8000;
 
 int res = 5;
 float step = 0.11;
-float fmag = 0.9;
-float turbulence = 0.15;
+float fmag = 1.1;
+float turbulence = 0.12;
 
 float xoffset = 121.5;
 float yoffset = 458;
@@ -102,6 +103,9 @@ PVector[][] fieldSamples;
 Particle[] particles;
 Particle[] stars;
 int[] processed;
+
+float[][] dispMap;
+OpenSimplexNoise dispNoise;
 
 void setup() {
   background(0);
@@ -123,6 +127,9 @@ void setup() {
    float offset = random(1);
    stars[i] = randomStar(width, height, 18);
   }
+  
+  dispMap = new float[height/res][width/res];
+  dispNoise = new OpenSimplexNoise();
 }
 
 // t is always between 0 and 1
@@ -134,6 +141,7 @@ void draw_(float t) {
   dt = t - prevT;
   prevT = t;
   if (dt < 0) dt = 1 + dt;
+  //println(t, dt);
   
   loadPixels();
   processed = fadeAndDiffuse(pixels, width, height, dt);
@@ -151,6 +159,19 @@ void draw_(float t) {
     }
     yoff += step;
   }
+  
+  float rate = 0.4;
+  yoff = 0;
+  for (int j = 0; j < dispMap.length; j++){
+    float xoff = 0;
+    for (int i = 0; i < dispMap[0].length; i++) {
+      float tdisp = 20 * (0.2 * cos(t * TAU) + 0.2 * sin(0.1 * t * TAU));
+      float n = (float) dispNoise.eval(xoff + 100 + tdisp, yoff+ 100);
+      dispMap[i][j] = map(n, -1, 1, -4.2, 4.2);
+      xoff += rate;
+    }
+    yoff += rate;
+  }
 
   // update each particle and show
   for (Particle p : particles) {
@@ -158,7 +179,7 @@ void draw_(float t) {
     p.applyField(fieldSamples, res);
     p.updatePhysics();
     p.updateStyle();
-    p.circleMap(-60, -80);
+    p.circleMap(-90, -80, dispMap, res);
     p.show(); 
   }
   
@@ -178,7 +199,7 @@ void setView(){
   translate(-border/2, -border / 2);
   // rotate slightly
   rotateY(-1.5 * PI/6);
-  translate(180, 0);
+  translate(140, 0);
   rotateY(-0.1);
   translate(0,0,20);
 }
